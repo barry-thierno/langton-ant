@@ -1,13 +1,9 @@
 import * as R from 'ramda';
 import * as React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import { ICell } from './Cell';
+import Cell, { ICell } from './Cell';
 import './Grid.css';
-import Line, { ILine } from './Line';
 
-export interface IGrid {
-  lines: ILine[];
-}
 export enum Orientation {
   NORTH = 'north',
   SOUTH = 'south',
@@ -20,13 +16,13 @@ export interface ICoordinate {
   orientation: Orientation;
 }
 export class ConfigurationState {
-  public readonly grid: IGrid;
+  public readonly grid: ICell[][];
   public readonly antCoordinate: ICoordinate;
   constructor(linesNumber: number, rowsNumber: number) {
     this.grid = buildInitialGrid(linesNumber, rowsNumber);
     const initialX = Math.trunc(linesNumber / 2);
     const initialY = Math.trunc(rowsNumber / 2);
-    this.grid.lines[initialX].rows[initialY].isAntPosition = true;
+    this.grid[initialX][initialY].isAntPosition = true;
     this.antCoordinate = {
       x: initialX,
       y: initialY,
@@ -36,64 +32,58 @@ export class ConfigurationState {
   }
 }
 
-const rowBuilder = (rowsNumber: number) => {
-  return R.times((y: number) => {
-    return {
-      isAntPosition: false,
-      isBlack: false
-    } as ICell;
-  }, rowsNumber);
-};
-export const buildInitialGrid = (linesNumber: number, rowsNumber: number) => {
-  return {
-    lines: R.times((x: number) => {
-      return { rows: rowBuilder(rowsNumber) } as ILine;
-    }, linesNumber)
-  } as IGrid;
-};
+const lineBuilder = (rowsNumber: number) =>
+  R.times(
+    () =>
+      ({
+        isAntPosition: false,
+        isBlack: false
+      } as ICell),
+    rowsNumber
+  );
 
-export const moveAnt = (configurationState: ConfigurationState) => {
-  const { grid, antCoordinate } = configurationState;
-  const newGrid = { ...grid };
-  const currentCell = newGrid.lines[antCoordinate.y].rows[antCoordinate.x];
-  currentCell.isAntPosition = !currentCell.isAntPosition;
+export const buildInitialGrid = (linesNumber: number, rowsNumber: number) =>
+  R.times(() => lineBuilder(rowsNumber), linesNumber);
 
-  let newAntCoordinate: ICoordinate;
+const getNextCoordinate = (currentCell: ICell, antCoordinate: ICoordinate): ICoordinate => {
   switch (antCoordinate.orientation) {
     case Orientation.NORTH:
-      newAntCoordinate = {
+      return {
         ...antCoordinate,
         x: currentCell.isBlack ? antCoordinate.x - 1 : antCoordinate.x + 1,
         // tslint:disable-next-line:object-literal-sort-keys
         orientation: currentCell.isBlack ? Orientation.WEST : Orientation.EAST
       };
-      break;
     case Orientation.EAST:
-      newAntCoordinate = {
+      return {
         ...antCoordinate,
         y: currentCell.isBlack ? antCoordinate.y - 1 : antCoordinate.y + 1,
         // tslint:disable-next-line:object-literal-sort-keys
         orientation: currentCell.isBlack ? Orientation.NORTH : Orientation.SOUTH
       };
-      break;
     case Orientation.SOUTH:
-      newAntCoordinate = {
+      return {
         ...antCoordinate,
         x: currentCell.isBlack ? antCoordinate.x + 1 : antCoordinate.x - 1,
         // tslint:disable-next-line:object-literal-sort-keys
         orientation: currentCell.isBlack ? Orientation.EAST : Orientation.WEST
       };
-      break;
     default:
-      newAntCoordinate = {
+      return {
         ...antCoordinate,
         y: currentCell.isBlack ? antCoordinate.y + 1 : antCoordinate.y - 1,
         // tslint:disable-next-line:object-literal-sort-keys
         orientation: currentCell.isBlack ? Orientation.SOUTH : Orientation.NORTH
       };
-      break;
   }
-  newGrid.lines[newAntCoordinate.y].rows[newAntCoordinate.x].isAntPosition = true;
+};
+export const moveAnt = (configurationState: ConfigurationState) => {
+  const { grid, antCoordinate } = configurationState;
+  const newGrid = R.clone(grid);
+  const currentCell = newGrid[antCoordinate.y][antCoordinate.x];
+  currentCell.isAntPosition = !currentCell.isAntPosition;
+  const newAntCoordinate = getNextCoordinate(currentCell, antCoordinate);
+  newGrid[newAntCoordinate.y][newAntCoordinate.x].isAntPosition = true;
   currentCell.isBlack = !currentCell.isBlack;
   return {
     grid: newGrid,
@@ -120,8 +110,16 @@ export class Grid extends React.Component<IGridProps, ConfigurationState> {
   render(): React.ReactNode {
     return (
       <div className="grid">
-        {this.state.grid.lines.map(line => (
-          <Line rows={line.rows} antCoordinate={this.state.antCoordinate} />
+        {this.state.grid.map(line => (
+          <div className="line">
+            {line.map(cell => (
+              <Cell
+                isAntPosition={cell.isAntPosition}
+                isBlack={cell.isBlack}
+                antCoordinate={this.state.antCoordinate}
+              />
+            ))}
+          </div>
         ))}
         <div className="play-btn">
           <RaisedButton label="Play" secondary={true} onClick={this.moveAnt} />

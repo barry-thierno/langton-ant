@@ -1,29 +1,29 @@
-import { buildInitialGrid } from './Grid';
+// import { buildInitialGrid } from './Grid';
 
-describe('buildInitialGrid', () => {
-  it('should build initialize grid  ', () => {
-    const grid = buildInitialGrid(21, 21);
-    const { lines } = grid;
-    expect(lines).toHaveLength(21);
-    lines.forEach((line, x) => {
-      const { rows } = line;
-      expect(rows).toHaveLength(21);
-      rows.forEach((cell, y) => {
-        if (x === Math.trunc(21 / 2) && y === Math.trunc(21 / 2)) {
-          expect(cell).toEqual({
-            isAntPosition: true,
-            isBasicColor: false
-          });
-        } else {
-          expect(cell).toEqual({
-            isAntPosition: false,
-            isBasicColor: false
-          });
-        }
-      });
-    });
-  });
-});
+// describe('buildInitialGrid', () => {
+//   it('should build initialize grid  ', () => {
+//     const grid = buildInitialGrid(21, 21);
+//     const { lines } = grid;
+//     expect(lines).toHaveLength(21);
+//     lines.forEach((line, x) => {
+//       const { rows } = line;
+//       expect(rows).toHaveLength(21);
+//       rows.forEach((cell, y) => {
+//         if (x === Math.trunc(21 / 2) && y === Math.trunc(21 / 2)) {
+//           expect(cell).toEqual({
+//             isAntPosition: true,
+//             isBasicColor: false
+//           });
+//         } else {
+//           expect(cell).toEqual({
+//             isAntPosition: false,
+//             isBasicColor: false
+//           });
+//         }
+//       });
+//     });
+//   });
+// });
 // describe('Ant moves rules', () => {
 //   const initialGrid = buildInitialGrid(21, 21);
 //   const antMoves: ICoordinate[] = [

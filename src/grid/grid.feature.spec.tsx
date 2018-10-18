@@ -4,7 +4,6 @@ import { defineFeature, loadFeature } from 'jest-cucumber';
 import 'jest-enzyme';
 
 import Cell from './Cell';
-import Line from './Line';
 import App from '../App';
 import 'core-js';
 import 'jest-enzyme';
@@ -24,7 +23,7 @@ defineFeature(feature, test => {
     then(
       /^I have a grid with (.*) lines, (.*) cells each line and an ant at the middle$/,
       (linesNumber, cellsNumber) => {
-        const lines = wrapper.find(Line);
+        const lines = wrapper.find('.line');
         expect(lines.length).toBe(Number.parseInt(linesNumber, 10));
         lines.forEach((line, x) => {
           const cells = line.find(Cell);
