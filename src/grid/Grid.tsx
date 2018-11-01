@@ -11,9 +11,9 @@ export enum Orientation {
   WEST = 'west'
 }
 export interface ICoordinate {
-  x: number;
-  y: number;
-  orientation: Orientation;
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Orientation;
 }
 export class ConfigurationState {
   public readonly grid: ICell[][];
@@ -96,7 +96,7 @@ export interface IGridProps {
   rowNumber: number;
 }
 // tslint:disable-next-line:max-classes-per-file
-export class Grid extends React.Component<IGridProps, ConfigurationState> {
+export class Grid extends React.PureComponent<IGridProps, ConfigurationState> {
   constructor(props: IGridProps) {
     super(props);
     this.state = new ConfigurationState(21, 21);
