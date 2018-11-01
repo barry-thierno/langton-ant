@@ -8,15 +8,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 15px;
-  width: 15px;
+  height: 20px;
+  width: 20px;
   border: 1px groove black;
 }
 .black-cell {
   background-color: rgb(8, 8, 8);
 }
 .cell > img {
-  height: 10px;
+  height: 18px;
 }
 .north-ant {
   transform: rotate(0deg);
