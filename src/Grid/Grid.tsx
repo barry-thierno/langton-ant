@@ -1,23 +1,28 @@
-import React from 'react';
-import * as R from 'ramda';
-import RaisedButton from 'material-ui/RaisedButton';
-import PropTypes from 'prop-types';
-import Cell from './Cell';
-import './Grid.css';
+import React from "react";
+import * as R from "ramda";
+import RaisedButton from "material-ui/RaisedButton";
+import PropTypes from "prop-types";
+import Cell, { ICellProps } from "./Cell";
+import "./Grid.css";
 
-export const Orientation = {
-  NORTH: 'north',
-  SOUTH: 'south',
-  EAST: 'east',
-  WEST: 'west'
-};
+export enum Orientation {
+  NORTH = "north",
+  SOUTH = "south",
+  EAST = "east",
+  WEST = "west"
+}
+export interface ICoordinate {
+  x: number;
+  y: number;
+  orientation: Orientation;
+}
 /**
  * The configuration is the representation of the GRID and ant Coodinate in the GRID
  */
 export class ConfigurationState {
-  grid;
-  antCoordinate;
-  constructor(linesNumber, rowsNumber) {
+  grid: ICellProps[][];
+  antCoordinate: ICoordinate;
+  constructor(linesNumber: number, rowsNumber: number) {
     this.grid = buildInitialGrid(linesNumber, rowsNumber);
     const initialX = Math.trunc(linesNumber / 2);
     const initialY = Math.trunc(rowsNumber / 2);
@@ -30,7 +35,7 @@ export class ConfigurationState {
   }
 }
 
-const lineBuilder = columnsNumber =>
+const lineBuilder = (columnsNumber: number) =>
   R.times(
     () => ({
       isAntPosition: false,
@@ -39,9 +44,13 @@ const lineBuilder = columnsNumber =>
     columnsNumber
   );
 
-export const buildInitialGrid = (linesNumber, columnsNumber) => R.times(() => lineBuilder(columnsNumber), linesNumber);
+export const buildInitialGrid = (linesNumber: number, columnsNumber: number) =>
+  R.times(() => lineBuilder(columnsNumber), linesNumber);
 
-const getNextCoordinate = (currentCell, antCoordinate) => {
+const getNextCoordinate = (
+  currentCell: ICellProps,
+  antCoordinate: ICoordinate
+) => {
   switch (antCoordinate.orientation) {
     case Orientation.NORTH:
       return {
@@ -115,9 +124,5 @@ class Grid extends React.PureComponent {
     );
   }
 }
-Grid.propTypes = {
-  linesNumber: PropTypes.number.isRequired,
-  columnsNumber: PropTypes.number.isRequired
-};
 
 export default Grid;
